@@ -1,0 +1,229 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Calender Api
+  description: 'Api to book meetings'
+basePath: /calender
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /availability/{employeeName}/{date}:
+    get:
+      tags:
+      - Get Availability of a employee
+      operationId: getAvailability
+      summary: Receive Available Slots
+      description: |
+        Fetch the availability of the employee for the day
+      parameters:
+      - name: "employeeName"
+        type: string
+        in: "path"
+        required: true
+      - name: "date"
+        type: string
+        in: "path"
+        required: true
+      responses:
+        '200':
+          description: List of available time slots for the day
+          schema:
+            $ref: '#/definitions/AvailabilityReply'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Messages'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Messages'
+  /book:
+    post:
+      tags:
+      - Book meeting slot for employees
+      operationId: bookMeetingSlot
+      summary: Book meeting slot
+      description: |
+        Book meeting slot for the employees
+      parameters:
+        - in: body
+          name: body
+          description: Book meeting slots for employee
+          required: true
+          schema:
+            $ref: '#/definitions/BookRequest'
+      responses:
+        '200':
+          description: List of available time slots for the day
+          schema:
+            $ref: '#/definitions/BookReply'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Messages'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Messages'
+  /recommendations/{date}:
+    get:
+      tags:
+      - Get recommendation for a particular date of the employees
+      operationId: getRecommendations
+      summary: Get slot recommendations
+      description: |
+        Get recommendation for booking slots
+      parameters:
+        - name: "date"
+          type: string
+          in: "path"
+          required: true
+        - name: employees
+          in: query
+          description: Status values that need to be considered for filter
+          required: true
+          type: array
+          items:
+            type: string
+            enum:
+              - alpha
+              - bravo
+              - charlie
+          collectionFormat: multi
+      responses:
+        '200':
+          description: List of available time slots for the day
+          schema:
+            $ref: '#/definitions/RecommendationReply'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Messages'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Messages'
+definitions:
+  RecommendationReply:
+    type: object
+    description: |
+      Reponse Containing Available time slots
+    properties:
+      data:
+        type: object
+        description: >-
+          List of Terms and Conditions
+        properties:
+          timeSlots:
+            type: array
+            items:
+              $ref: '#/definitions/TimeSlot'
+      errors:
+        type: array
+        description: >-
+          Errors
+        items:
+          $ref: '#/definitions/ErrorMessage'
+  RecommendationRequest:
+    type: object
+    properties:
+      employees:
+        description: List of employees
+        type: array
+        items:
+          $ref: '#/definitions/Employee'
+      date:
+        type: string
+  BookReply:
+    type: object
+    description: |
+      Reponse Containing Available time slots
+    properties:
+      data:
+        type: object
+        description: >-
+          List of Terms and Conditions
+        properties:
+          bookingSuccess:
+            type: boolean
+      errors:
+        type: array
+        description: >-
+          Errors
+        items:
+          $ref: '#/definitions/ErrorMessage'
+  AvailabilityReply:
+    type: object
+    description: |
+      Reponse Containing Available time slots
+    properties:
+      data:
+        type: object
+        description: >-
+          List of Terms and Conditions
+        properties:
+          timeSlots:
+            type: array
+            items:
+              $ref: '#/definitions/TimeSlot'
+      errors:
+        type: array
+        description: >-
+          Errors
+        items:
+          $ref: '#/definitions/ErrorMessage'
+  TimeSlot:
+    type: object
+    description: >-
+      Available time slots
+    properties:
+      startTime:
+        description: Start of available time
+        type: string
+      endTime:
+        description: Start of available time
+        type: string
+  ErrorMessage:
+    type: object
+    required:
+      - title
+    properties:
+      code:
+        description: An application-specific error code
+        type: string
+      title:
+        description: A short summary of the error
+        type: string
+      detail:
+        description: Explanation of the error
+        type: string
+  BookRequest:
+    type: object
+    properties:
+      employees:
+        description: List of employees
+        type: array
+        items:
+          $ref: '#/definitions/Employee'
+      startTime:
+        type: string
+      endTime:
+        type: string
+      date:
+        type: string
+      
+  Employee:
+    type: string
+  Messages:
+    type: object
+    properties:
+      error:
+        type: object
+
+
+
+    
